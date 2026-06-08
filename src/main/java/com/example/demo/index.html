@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rock Paper Scissors</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 420px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-card {
+      background: #f8f8f8;
+      border-radius: 10px;
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    .score-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+    .score-val { font-size: 24px; font-weight: 600; color: #1a1a1a; }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+
+    .choice-btn {
+      background: white;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 1rem 0.5rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.1s, border-color 0.1s;
+      font-family: inherit;
+    }
+
+    .choice-btn:hover { border-color: #aaa; transform: scale(1.04); }
+    .choice-btn.selected { border: 2px solid #4a90e2; background: #eef4fd; }
+    .choice-icon { font-size: 2rem; }
+    .choice-label { font-size: 12px; font-weight: 500; color: #666; }
+
+    .play-btn {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 1.5px solid #e0e0e0;
+      background: white;
+      color: #1a1a1a;
+      margin-bottom: 1.25rem;
+      font-family: inherit;
+    }
+
+    .play-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .result-box {
+      background: #f8f8f8;
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .vs-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 6px;
+    }
+
+    .vs-side { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .vs-icon { font-size: 2.2rem; }
+    .vs-name { font-size: 11px; color: #888; }
+    .vs-mid { font-size: 13px; color: #aaa; }
+
+    .outcome { font-size: 18px; font-weight: 600; }
+    .outcome.win  { color: #27ae60; }
+    .outcome.lose { color: #e74c3c; }
+    .outcome.draw { color: #1a1a1a; }
+    .hint { font-size: 13px; color: #888; }
+
+    .again-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 1.25rem;
+    }
+
+    .again-btn {
+      padding: 0.6rem;
+      font-size: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1.5px solid #e0e0e0;
+      background: white;
+      color: #1a1a1a;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Rock Paper Scissors</h1>
+
+  <div class="score-row">
+    <div class="score-card">
+      <div class="score-label">You</div>
+      <div class="score-val" id="s-you">0</div>
+    </div>
+    <div class="score-card">
+      <div class="score-label">Draws</div>
+      <div class="score-val" id="s-draw">0</div>
+    </div>
+    <div class="score-card">
+      <div class="score-label">Computer</div>
+      <div class="score-val" id="s-comp">0</div>
+    </div>
+  </div>
+
+  <div class="choices">
+    <button class="choice-btn" onclick="select(0)" id="btn-0">
+      <span class="choice-icon">🪨</span>
+      <span class="choice-label">Rock</span>
+    </button>
+    <button class="choice-btn" onclick="select(1)" id="btn-1">
+      <span class="choice-icon">📄</span>
+      <span class="choice-label">Paper</span>
+    </button>
+    <button class="choice-btn" onclick="select(2)" id="btn-2">
+      <span class="choice-icon">✂️</span>
+      <span class="choice-label">Scissors</span>
+    </button>
+  </div>
+
+  <button class="play-btn" id="play-btn" onclick="play()" disabled>
+    Choose a move above
+  </button>
+
+  <div class="result-box" id="result-box">
+    <div class="hint">Pick rock, paper, or scissors to start</div>
+  </div>
+
+  <div class="again-row" id="again-row" style="display:none">
+    <button class="again-btn" onclick="resetRound()">Play Again</button>
+    <button class="again-btn" onclick="resetAll()">Reset Scores</button>
+  </div>
+</div>
+
+<script>
+  const icons = ['🪨', '📄', '✂️'];
+  const names = ['Rock', 'Paper', 'Scissors'];
+  let chosen = -1;
+  let scores = { you: 0, draw: 0, comp: 0 };
+
+  function select(i) {
+    chosen = i;
+    [0, 1, 2].forEach(j => {
+      document.getElementById('btn-' + j).classList.toggle('selected', j === i);
+    });
+    const btn = document.getElementById('play-btn');
+    btn.disabled = false;
+    btn.textContent = 'Play!';
+  }
+
+  async function play() {
+    if (chosen < 0) return;
+    const btn = document.getElementById('play-btn');
+    btn.disabled = true;
+    btn.textContent = 'Waiting...';
+
+    try {
+      const response = await fetch(`http://localhost:8080/play?user=${chosen}`);
+      const text = await response.text();
+      const [compChoice, result] = text.split('|');
+      const comp = names.indexOf(compChoice);
+
+      let cls;
+      if (result.includes('win')) { cls = 'win'; scores.you++; }
+      else if (result.includes('Draw')) { cls = 'draw'; scores.draw++; }
+      else { cls = 'lose'; scores.comp++; }
+
+      document.getElementById('s-you').textContent = scores.you;
+      document.getElementById('s-draw').textContent = scores.draw;
+      document.getElementById('s-comp').textContent = scores.comp;
+
+      document.getElementById('result-box').innerHTML = `
+        <div class="vs-row">
+          <div class="vs-side">
+            <span class="vs-icon">${icons[chosen]}</span>
+            <span class="vs-name">You</span>
+          </div>
+          <span class="vs-mid">vs</span>
+          <div class="vs-side">
+            <span class="vs-icon">${icons[comp]}</span>
+            <span class="vs-name">Computer</span>
+          </div>
+        </div>
+        <div class="outcome ${cls}">${result}</div>
+        <div class="hint">${names[chosen]} vs ${compChoice}</div>
+      `;
+
+      document.getElementById('again-row').style.display = 'grid';
+
+    } catch (e) {
+      document.getElementById('result-box').innerHTML =
+        '<div class="hint" style="color:#e74c3c">Server se connect nahi ho pa raha!<br>Make sure Java server chal raha ho.</div>';
+      btn.disabled = false;
+      btn.textContent = 'Try Again';
+    }
+
+    [0, 1, 2].forEach(j => document.getElementById('btn-' + j).classList.remove('selected'));
+    chosen = -1;
+  }
+
+  function resetRound() {
+    document.getElementById('result-box').innerHTML =
+      '<div class="hint">Pick rock, paper, or scissors to start</div>';
+    document.getElementById('again-row').style.display = 'none';
+    document.getElementById('play-btn').disabled = true;
+    document.getElementById('play-btn').textContent = 'Choose a move above';
+  }
+
+  function resetAll() {
+    scores = { you: 0, draw: 0, comp: 0 };
+    document.getElementById('s-you').textContent = 0;
+    document.getElementById('s-draw').textContent = 0;
+    document.getElementById('s-comp').textContent = 0;
+    resetRound();
+  }
+</script>
+</body>
+</html>
