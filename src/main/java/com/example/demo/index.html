@@ -213,7 +213,7 @@
     btn.textContent = 'Waiting...';
 
     try {
-      const response = await fetch(`http://localhost:8080/play?user=${chosen}`);
+      const response = await fetch(`https://rock-paper-scissors-production-4b99.up.railway.app/play?user=${chosen}`);
       const text = await response.text();
       const [compChoice, result] = text.split('|');
       const comp = names.indexOf(compChoice);
