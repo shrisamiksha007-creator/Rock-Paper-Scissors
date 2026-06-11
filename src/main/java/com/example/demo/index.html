@@ -216,12 +216,22 @@
       const response = await fetch(`https://rock-paper-scissors-production-4b99.up.railway.app/play?user=${chosen}`);
       const text = await response.text();
       const [compChoice, result] = text.split('|');
+      console.log("Server Result:", result);
       const comp = names.indexOf(compChoice);
 
-      let cls;
-      if (result.includes('win')) { cls = 'win'; scores.you++; }
-      else if (result.includes('Draw')) { cls = 'draw'; scores.draw++; }
-      else { cls = 'lose'; scores.comp++; }
+          let cls;
+          if (result === "You win!") {
+          cls = 'win';
+          scores.you++;
+          }
+          else if (result === "Draw!") {
+          cls = 'draw';
+          scores.draw++;
+          }
+         else if (result === "Computer wins!") {
+         cls = 'lose';
+         scores.comp++;
+          }
 
       document.getElementById('s-you').textContent = scores.you;
       document.getElementById('s-draw').textContent = scores.draw;
